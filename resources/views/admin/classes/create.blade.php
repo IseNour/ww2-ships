@@ -12,20 +12,20 @@
             @csrf
             
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Class Name *</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Class Name *</label>
                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
                        value="{{ old('name') }}" required placeholder="e.g., Benson, Fletcher, Gearing"
-                       style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                       style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                 @error('name')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
-                <small class="text-muted" style="color: #5e6b72;">Enter the ship class name (e.g., "Benson", "Fletcher")</small>
+                <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">Enter the ship class name (e.g., "Benson", "Fletcher")</small>
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Country *</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Country *</label>
                 <select name="country_id" class="form-select @error('country_id') is-invalid @enderror" required
-                        style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                        style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                     <option value="">Select Country</option>
                     @foreach($countries as $country)
                         <option value="{{ $country->id }}" {{ old('country_id') == $country->id ? 'selected' : '' }}>
@@ -39,9 +39,9 @@
             </div>
 
             <div class="mb-4">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Ship Type *</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Ship Type *</label>
                 <select name="type_id" class="form-select @error('type_id') is-invalid @enderror" required
-                        style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                        style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                     <option value="">Select Ship Type</option>
                     @foreach($types as $type)
                         <option value="{{ $type->id }}" {{ old('type_id') == $type->id ? 'selected' : '' }}>
@@ -83,23 +83,24 @@
     }
     .btn-naval-outline {
         background: transparent;
-        color: #1a3a5c;
-        border: 2px solid #1a3a5c;
+        color: var(--text-primary, #1a3a5c);
+        border: 2px solid var(--text-primary, #1a3a5c);
         padding: 10px 24px;
         border-radius: 10px;
         font-weight: 600;
         transition: all 0.3s ease;
     }
     .btn-naval-outline:hover {
-        background: #1a3a5c;
+        background: var(--text-primary, #1a3a5c);
         color: white;
     }
     .card-naval {
-        background: white;
+        background: var(--bg-card, white);
         border-radius: 16px;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color, rgba(26,58,92,0.1));
+        box-shadow: 0 2px 10px var(--shadow-color, rgba(0,0,0,0.05));
         overflow: hidden;
+        transition: background 0.3s ease, border-color 0.3s ease;
     }
     .card-naval .card-header {
         background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%);

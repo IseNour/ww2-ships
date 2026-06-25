@@ -14,10 +14,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Ship Name *</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Ship Name *</label>
                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
                                value="{{ old('name') }}" required
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('name')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -25,9 +25,9 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Class *</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Class *</label>
                         <select name="class_id" class="form-select @error('class_id') is-invalid @enderror" required
-                                style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                                style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                             <option value="">Select Class</option>
                             @foreach($classes as $class)
                                 <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
@@ -45,10 +45,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Launch Date</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Launch Date</label>
                         <input type="date" name="launch_date" class="form-control @error('launch_date') is-invalid @enderror" 
                                value="{{ old('launch_date') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('launch_date')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -56,10 +56,10 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Commission Date</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Commission Date</label>
                         <input type="date" name="commission_date" class="form-control @error('commission_date') is-invalid @enderror" 
                                value="{{ old('commission_date') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('commission_date')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -70,10 +70,10 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Displacement (tons)</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Displacement (tons)</label>
                         <input type="number" step="0.01" name="displacement" class="form-control @error('displacement') is-invalid @enderror" 
                                value="{{ old('displacement') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('displacement')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -81,10 +81,10 @@
                 </div>
                 <div class="col-md-3">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Length (m)</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Length (m)</label>
                         <input type="number" step="0.01" name="length" class="form-control @error('length') is-invalid @enderror" 
                                value="{{ old('length') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('length')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -92,10 +92,10 @@
                 </div>
                 <div class="col-md-3">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Beam (m)</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Beam (m)</label>
                         <input type="number" step="0.01" name="beam" class="form-control @error('beam') is-invalid @enderror" 
                                value="{{ old('beam') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('beam')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -103,10 +103,10 @@
                 </div>
                 <div class="col-md-3">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Draft (m)</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Draft (m)</label>
                         <input type="number" step="0.01" name="draft" class="form-control @error('draft') is-invalid @enderror" 
                                value="{{ old('draft') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('draft')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -117,10 +117,10 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Max Speed (knots)</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Max Speed (knots)</label>
                         <input type="number" step="0.01" name="max_speed" class="form-control @error('max_speed') is-invalid @enderror" 
                                value="{{ old('max_speed') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('max_speed')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -128,10 +128,10 @@
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Crew</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Crew</label>
                         <input type="number" name="crew" class="form-control @error('crew') is-invalid @enderror" 
                                value="{{ old('crew') }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('crew')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -139,10 +139,10 @@
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">Fate</label>
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Fate</label>
                         <input type="text" name="fate" class="form-control @error('fate') is-invalid @enderror" 
                                value="{{ old('fate') }}" placeholder="e.g., Museum ship, Sunk in 1945"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('fate')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -151,9 +151,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Description</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Description</label>
                 <textarea name="description" class="form-control @error('description') is-invalid @enderror" 
-                          rows="3" style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">{{ old('description') }}</textarea>
+                          rows="3" style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">{{ old('description') }}</textarea>
                 @error('description')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -170,28 +170,28 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Images</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Images</label>
                 <input type="file" name="images[]" class="form-control @error('images') is-invalid @enderror" 
-                       multiple accept="image/*" style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
-                <small class="text-muted" style="color: #5e6b72;">You can upload multiple images (JPEG, PNG, GIF, WEBP - max 2MB each)</small>
+                       multiple accept="image/*" style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
+                <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">You can upload multiple images (JPEG, PNG, GIF, WEBP - max 2MB each)</small>
                 @error('images')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Image Caption</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Image Caption</label>
                 <input type="text" name="caption" class="form-control" placeholder="Caption for the images"
-                       style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                       style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
             </div>
 
             <!-- AIRCRAFT COMPLEMENT SECTION -->
             <div id="aircraftSection" style="display: none;">
                 <div class="mb-3">
-                    <label class="form-label fw-bold" style="color: #1a3a5c;">
+                    <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">
                         <i class="bi bi-airplane"></i> Aircraft Complement
                     </label>
-                    <div style="max-height: 300px; overflow-y: auto; border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 16px;">
+                    <div style="max-height: 300px; overflow-y: auto; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 16px;">
                         @foreach($aircraftModels as $aircraft)
                             <div class="row mb-2 align-items-center aircraft-row">
                                 <div class="col-md-4">
@@ -202,7 +202,7 @@
                                                id="aircraft_{{ $aircraft->id }}">
                                         <label class="form-check-label" for="aircraft_{{ $aircraft->id }}">
                                             {{ $aircraft->name }}
-                                            <small class="text-muted" style="color: #5e6b72;">({{ $aircraft->type->name }})</small>
+                                            <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">({{ $aircraft->type->name }})</small>
                                         </label>
                                     </div>
                                 </div>
@@ -224,7 +224,7 @@
                             </div>
                         @endforeach
                     </div>
-                    <small class="text-muted" style="color: #5e6b72;">Check the aircraft carried by this ship. Enter quantity and year.</small>
+                    <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">Check the aircraft carried by this ship. Enter quantity and year.</small>
                 </div>
             </div>
 
@@ -241,7 +241,6 @@
 </div>
 
 <script>
-    // Show/hide aircraft section when carrier checkbox is toggled
     document.getElementById('isCarrier').addEventListener('change', function() {
         const aircraftSection = document.getElementById('aircraftSection');
         if (this.checked) {
@@ -301,23 +300,24 @@
     }
     .btn-naval-outline {
         background: transparent;
-        color: #1a3a5c;
-        border: 2px solid #1a3a5c;
+        color: var(--text-primary, #1a3a5c);
+        border: 2px solid var(--text-primary, #1a3a5c);
         padding: 10px 24px;
         border-radius: 10px;
         font-weight: 600;
         transition: all 0.3s ease;
     }
     .btn-naval-outline:hover {
-        background: #1a3a5c;
+        background: var(--text-primary, #1a3a5c);
         color: white;
     }
     .card-naval {
-        background: white;
+        background: var(--bg-card, white);
         border-radius: 16px;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color, rgba(26,58,92,0.1));
+        box-shadow: 0 2px 10px var(--shadow-color, rgba(0,0,0,0.05));
         overflow: hidden;
+        transition: background 0.3s ease, border-color 0.3s ease;
     }
     .card-naval .card-header {
         background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%);

@@ -12,21 +12,21 @@
             @csrf
             
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Country Name *</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Country Name *</label>
                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
                        value="{{ old('name') }}" required
-                       style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
+                       style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                 @error('name')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold" style="color: #1a3a5c;">Flag (filename)</label>
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Flag (filename)</label>
                 <input type="text" name="flag" class="form-control @error('flag') is-invalid @enderror" 
                        value="{{ old('flag') }}" placeholder="e.g., us.png"
-                       style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
-                <small class="text-muted" style="color: #5e6b72;">Enter the flag filename (e.g., us.png). Upload flag images to <strong>public/storage/flags/</strong></small>
+                       style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
+                <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">Enter the flag filename (e.g., us.png). Upload flag images to <strong>public/storage/flags/</strong></small>
                 @error('flag')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
@@ -61,23 +61,24 @@
     }
     .btn-naval-outline {
         background: transparent;
-        color: #1a3a5c;
-        border: 2px solid #1a3a5c;
+        color: var(--text-primary, #1a3a5c);
+        border: 2px solid var(--text-primary, #1a3a5c);
         padding: 10px 24px;
         border-radius: 10px;
         font-weight: 600;
         transition: all 0.3s ease;
     }
     .btn-naval-outline:hover {
-        background: #1a3a5c;
+        background: var(--text-primary, #1a3a5c);
         color: white;
     }
     .card-naval {
-        background: white;
+        background: var(--bg-card, white);
         border-radius: 16px;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color, rgba(26,58,92,0.1));
+        box-shadow: 0 2px 10px var(--shadow-color, rgba(0,0,0,0.05));
         overflow: hidden;
+        transition: background 0.3s ease, border-color 0.3s ease;
     }
     .card-naval .card-header {
         background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%);

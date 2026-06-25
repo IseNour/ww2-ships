@@ -1,0 +1,11 @@
+/vendor/
+/node_modules/
+/storage/
+/public/storage/
+.env
+.env.*
+*.log
+/.idea/
+/.vscode/
+/bootstrap/cache/
+/public/build/

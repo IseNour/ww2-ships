@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Naval custom styles */
+@layer base {
+    body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: linear-gradient(180deg, #f0f4f8 0%, #dce4ed 100%);
+        min-height: 100vh;
+    }
+}
+
+@layer components {
+    .btn-naval {
+        @apply bg-gradient-to-r from-navy-500 to-ocean-500 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5;
+    }
+    
+    .btn-naval-outline {
+        @apply border-2 border-navy-500 text-navy-500 font-semibold py-2 px-6 rounded-lg transition-all duration-300 hover:bg-navy-500 hover:text-white hover:shadow-lg;
+    }
+    
+    .card-naval {
+        @apply bg-white/95 backdrop-blur-sm border border-navy-500/10 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    }
+    
+    .stat-card {
+        @apply bg-gradient-to-br from-navy-500 to-navy-700 rounded-xl p-6 text-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    }
+    
+    .stat-number {
+        @apply text-4xl font-bold font-cinzel bg-gradient-to-r from-brass-500 to-brass-300 bg-clip-text text-transparent;
+    }
+    
+    .badge-naval {
+        @apply bg-gradient-to-r from-navy-500 to-ocean-500 text-white px-4 py-1.5 rounded-full text-sm font-medium;
+    }
+    
+    .badge-brass {
+        @apply bg-gradient-to-r from-brass-500 to-brass-600 text-white px-4 py-1.5 rounded-full text-sm font-medium;
+    }
+}
+
+@layer utilities {
+    .text-gold-gradient {
+        @apply bg-gradient-to-r from-brass-500 to-brass-300 bg-clip-text text-transparent;
+    }
+    
+    .naval-divider {
+        @apply h-0.5 w-4/5 mx-auto my-5 rounded-full bg-gradient-to-r from-transparent via-navy-500 to-transparent;
+    }
+}

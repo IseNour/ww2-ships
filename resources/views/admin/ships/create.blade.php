@@ -42,6 +42,35 @@
                 </div>
             </div>
 
+            <!-- ============================================ -->
+            <!-- OPERATOR COUNTRY - ADDED                     -->
+            <!-- ============================================ -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">
+                            <i class="bi bi-flag"></i> Operator Country
+                        </label>
+                        <select name="operator_country_id" class="form-select @error('operator_country_id') is-invalid @enderror"
+                                style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
+                            <option value="">Same as Class Country</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country->id }}" {{ old('operator_country_id') == $country->id ? 'selected' : '' }}>
+                                    {{ $country->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">
+                            <i class="bi bi-info-circle"></i> 
+                            Select if this ship was operated by a different country than its class (e.g., HMNZS Achilles operated by New Zealand, but its class is British Leander-class).
+                        </small>
+                        @error('operator_country_id')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -211,16 +240,6 @@
                                            class="form-control form-control-sm aircraft-quantity" 
                                            placeholder="Qty" style="display: none;">
                                 </div>
-                                <div class="col-md-3">
-                                    <input type="text" name="aircraft[{{ $loop->index }}][start_date]" 
-                                           class="form-control form-control-sm aircraft-date" 
-                                           placeholder="Year (e.g., 1941)" style="display: none;">
-                                </div>
-                                <div class="col-md-2">
-                                    <input type="text" name="aircraft[{{ $loop->index }}][notes]" 
-                                           class="form-control form-control-sm aircraft-notes" 
-                                           placeholder="Notes" style="display: none;">
-                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -251,11 +270,7 @@
                 checkbox.checked = false;
                 const row = checkbox.closest('.row');
                 row.querySelector('.aircraft-quantity').style.display = 'none';
-                row.querySelector('.aircraft-date').style.display = 'none';
-                row.querySelector('.aircraft-notes').style.display = 'none';
                 row.querySelector('.aircraft-quantity').value = '';
-                row.querySelector('.aircraft-date').value = '';
-                row.querySelector('.aircraft-notes').value = '';
             });
         }
     });
@@ -264,20 +279,12 @@
         checkbox.addEventListener('change', function() {
             const row = this.closest('.row');
             const quantity = row.querySelector('.aircraft-quantity');
-            const date = row.querySelector('.aircraft-date');
-            const notes = row.querySelector('.aircraft-notes');
             
             if (this.checked) {
                 quantity.style.display = 'block';
-                date.style.display = 'block';
-                notes.style.display = 'block';
             } else {
                 quantity.style.display = 'none';
-                date.style.display = 'none';
-                notes.style.display = 'none';
                 quantity.value = '';
-                date.value = '';
-                notes.value = '';
             }
         });
     });

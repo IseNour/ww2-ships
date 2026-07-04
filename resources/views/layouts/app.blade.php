@@ -248,7 +248,7 @@
         </div>
     </main>
 
-    <footer class="footer-naval">
+   <footer class="footer-naval">
     <div class="container text-center">
         <div class="row">
             <div class="col-md-12">
@@ -262,6 +262,10 @@
                     <span style="color: rgba(255,255,255,0.3); margin: 0 8px;">•</span>
                     <a href="{{ route('ships.index') }}" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.3s ease;">Ships</a>
                     <span style="color: rgba(255,255,255,0.3); margin: 0 8px;">•</span>
+                    <!-- ====== AIRCRAFT LINK ADDED ====== -->
+                    <a href="{{ route('aircraft.index') }}" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.3s ease;">Aircraft</a>
+                    <span style="color: rgba(255,255,255,0.3); margin: 0 8px;">•</span>
+                    <!-- ================================== -->
                     <a href="{{ route('battles.index') }}" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.3s ease;">Battles</a>
                     <span style="color: rgba(255,255,255,0.3); margin: 0 8px;">•</span>
                     <a href="{{ route('countries.index') }}" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.3s ease;">Countries</a>

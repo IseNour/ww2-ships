@@ -55,12 +55,25 @@ class AdminBattleController extends Controller
 
         $battle = Battle::create($validated);
 
-        // Attach ships with results
+        // =============================================
+        // ATTACH SHIPS WITH RESULTS - FIXED
+        // =============================================
         if ($request->has('ships')) {
-            foreach ($request->ships as $index => $shipId) {
-                $result = $request->results[$index] ?? 'Unknown';
-                $battle->ships()->attach($shipId, ['result' => $result]);
+            $syncData = [];
+            $results = $request->results ?? [];
+            
+            foreach ($request->ships as $shipId) {
+                $result = 'Unknown';
+                
+                // Check if result exists for this ship ID
+                if (isset($results[$shipId]) && !empty($results[$shipId])) {
+                    $result = $results[$shipId];
+                }
+                
+                $syncData[$shipId] = ['result' => $result];
             }
+            
+            $battle->ships()->attach($syncData);
         }
 
         return redirect()->route('admin.battles.index')
@@ -109,7 +122,6 @@ class AdminBattleController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($battle->image_url) {
                 $oldPath = str_replace('/storage/', '', $battle->image_url);
                 if (Storage::disk('public')->exists($oldPath)) {
@@ -123,14 +135,32 @@ class AdminBattleController extends Controller
 
         $battle->update($validated);
 
-        // Update ship associations
-        $battle->ships()->detach();
-        
+        // =============================================
+        // UPDATE SHIP ASSOCIATIONS - FIXED
+        // =============================================
         if ($request->has('ships')) {
-            foreach ($request->ships as $index => $shipId) {
-                $result = $request->results[$index] ?? 'Unknown';
-                $battle->ships()->attach($shipId, ['result' => $result]);
+            $syncData = [];
+            $results = $request->results ?? [];
+            
+            // Log for debugging
+            \Log::info('Ships:', $request->ships);
+            \Log::info('Results:', $results);
+            
+            foreach ($request->ships as $shipId) {
+                $result = 'Unknown';
+                
+                // Check if result exists for this ship ID
+                if (isset($results[$shipId]) && !empty($results[$shipId])) {
+                    $result = $results[$shipId];
+                }
+                
+                $syncData[$shipId] = ['result' => $result];
             }
+            
+            // Sync will add, update, and remove as needed
+            $battle->ships()->sync($syncData);
+        } else {
+            $battle->ships()->detach();
         }
 
         return redirect()->route('admin.battles.show', $battle)

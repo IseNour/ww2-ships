@@ -49,11 +49,7 @@
                         <div class="p-3 rounded-3 text-center" style="background: rgba(26, 58, 92, 0.06);">
                             <div style="color: #5e6b72; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Type</div>
                             <div style="color: #1a3a5c; font-weight: 600; font-size: 1rem; margin-top: 4px;">
-                                @if($ship->is_aircraft_carrier)
-                                    <i class="bi bi-airplane" style="color: #ccb250;"></i> Aircraft Carrier
-                                @else
-                                    <i class="bi bi-ship" style="color: #1a3a5c;"></i> Warship
-                                @endif
+                                <i class="bi bi-info-circle" style="color: #2e89a8;"></i> {{ $ship->class->type->name ?? 'Unknown' }}
                             </div>
                         </div>
                     </div>
@@ -135,7 +131,7 @@
                                     <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem;">Aircraft</th>
                                     <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem;">Type</th>
                                     <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem; text-align: center;">Qty</th>
-                                    <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem; text-align: center;">Period</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,30 +140,7 @@
                                         <td style="color: #1a3a5c; font-weight: 500; font-size: 0.85rem;">{{ $aircraft->name }}</td>
                                         <td style="color: #5e6b72; font-size: 0.85rem;">{{ $aircraft->type->name }}</td>
                                         <td style="color: #5e6b72; font-size: 0.85rem; text-align: center;">{{ $aircraft->pivot->quantity }}</td>
-                                        <td style="color: #5e6b72; font-size: 0.85rem; text-align: center;">
-                                            @if($aircraft->pivot->start_date)
-                                                @php
-                                                    try {
-                                                        $startYear = \Carbon\Carbon::parse($aircraft->pivot->start_date)->format('Y');
-                                                    } catch (\Exception $e) {
-                                                        $startYear = $aircraft->pivot->start_date;
-                                                    }
-                                                @endphp
-                                                {{ $startYear }}
-                                            @else
-                                                N/A
-                                            @endif
-                                            @if($aircraft->pivot->end_date)
-                                                @php
-                                                    try {
-                                                        $endYear = \Carbon\Carbon::parse($aircraft->pivot->end_date)->format('Y');
-                                                    } catch (\Exception $e) {
-                                                        $endYear = $aircraft->pivot->end_date;
-                                                    }
-                                                @endphp
-                                                - {{ $endYear }}
-                                            @endif
-                                        </td>
+                                       
                                     </tr>
                                 @endforeach
                             </tbody>

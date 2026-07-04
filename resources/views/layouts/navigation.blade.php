@@ -25,6 +25,14 @@
                         <i class="bi bi-compass"></i> Ships
                     </a>
                 </li>
+                <!-- ====== AIRCRAFT LINK ADDED ====== -->
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('aircraft.*') ? 'active' : '' }}" 
+                       href="{{ route('aircraft.index') }}">
+                        <i class="bi bi-airplane"></i> Aircraft
+                    </a>
+                </li>
+                <!-- ================================== -->
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('battles.*') ? 'active' : '' }}" 
                        href="{{ route('battles.index') }}">
@@ -52,12 +60,12 @@
             <!-- Right side - User dropdown -->
             <ul class="navbar-nav">
                 <!-- Dark Mode Toggle -->
-    <li class="nav-item d-flex align-items-center">
-        <button id="darkModeToggle" class="btn-dark-mode" title="Toggle Dark Mode">
-            <i class="bi bi-moon-fill"></i>
-            <span style="font-size: 0.8rem; font-weight: 500;">Dark</span>
-        </button>
-    </li>
+                <li class="nav-item d-flex align-items-center">
+                    <button id="darkModeToggle" class="btn-dark-mode" title="Toggle Dark Mode">
+                        <i class="bi bi-moon-fill"></i>
+                        <span style="font-size: 0.8rem; font-weight: 500;">Dark</span>
+                    </button>
+                </li>
                 @auth
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 

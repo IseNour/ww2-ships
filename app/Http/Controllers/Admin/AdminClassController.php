@@ -11,15 +11,54 @@ use Illuminate\Http\Request;
 class AdminClassController extends Controller
 {
     /**
-     * Display a listing of ship classes.
+     * Display a listing of ship classes with search and filters.
      */
-    public function index()
+    public function index(Request $request)  // ← Add Request parameter
     {
-        $classes = ShipClass::with(['country', 'type', 'ships'])
-                            ->orderBy('name')
-                            ->paginate(15);
+        $query = ShipClass::with(['country', 'type', 'ships']);
+
+        // Search by class name or country name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhereHas('country', function($cq) use ($search) {
+                      $cq->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by country
+        if ($request->filled('country')) {
+            $query->where('country_id', $request->country);
+        }
+
+        // Filter by type
+        if ($request->filled('type')) {
+            $query->where('type_id', $request->type);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort', 'name');
+        $sortOrder = $request->get('order', 'asc');
+        $allowedSorts = ['name', 'year_from', 'year_to', 'total_built', 'created_at'];
         
-        return view('admin.classes.index', compact('classes'));
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('name', 'asc');
+        }
+
+        $classes = $query->paginate(15)->withQueryString();
+
+        // Get data for filters
+        $countries = Country::orderBy('name')->get();
+        $types = ShipType::orderBy('name')->get();
+        
+        // Preserve filters
+        $filters = $request->all();
+
+        return view('admin.classes.index', compact('classes', 'countries', 'types', 'filters'));
     }
 
     /**
@@ -42,6 +81,10 @@ class AdminClassController extends Controller
             'name' => 'required|string|max:255|unique:classes',
             'country_id' => 'required|exists:countries,id',
             'type_id' => 'required|exists:ship_types,id',
+            'description' => 'nullable|string|max:1000',
+            'year_from' => 'nullable|integer|min:1800|max:2025',
+            'year_to' => 'nullable|integer|min:1800|max:2025',
+            'total_built' => 'nullable|integer|min:0',
         ]);
 
         $class = ShipClass::create($validated);
@@ -55,7 +98,7 @@ class AdminClassController extends Controller
      */
     public function show(string $id)
     {
-        $class = ShipClass::with(['country', 'type', 'ships'])
+        $class = ShipClass::with(['country', 'type', 'ships', 'ships.images'])
                           ->findOrFail($id);
         
         return view('admin.classes.show', compact('class'));
@@ -84,6 +127,10 @@ class AdminClassController extends Controller
             'name' => 'required|string|max:255|unique:classes,name,' . $id,
             'country_id' => 'required|exists:countries,id',
             'type_id' => 'required|exists:ship_types,id',
+            'description' => 'nullable|string|max:1000',
+            'year_from' => 'nullable|integer|min:1800|max:2025',
+            'year_to' => 'nullable|integer|min:1800|max:2025',
+            'total_built' => 'nullable|integer|min:0',
         ]);
 
         $class->update($validated);

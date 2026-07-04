@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Ship;
 use App\Models\ShipClass;
 use App\Models\ShipImage;
+use App\Models\Country;
+use App\Models\ShipType;
 use App\Models\ShipAircraft;
 use App\Models\AircraftModel;
 use App\Models\Battle;
@@ -15,15 +17,66 @@ use Illuminate\Support\Facades\Storage;
 class AdminShipController extends Controller
 {
     /**
-     * Display a listing of ships.
+     * Display a listing of ships with search and filters.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $ships = Ship::with(['class', 'class.country', 'images'])
-                     ->orderBy('created_at', 'desc')
-                     ->paginate(15);
+        $query = Ship::with(['class', 'class.country', 'class.type', 'images']);
+
+        // Search by ship name, class name, or country name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhereHas('class', function($cq) use ($search) {
+                      $cq->where('name', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('class.country', function($cq) use ($search) {
+                      $cq->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by country
+        if ($request->filled('country')) {
+            $query->whereHas('class', function($q) use ($request) {
+                $q->where('country_id', $request->country);
+            });
+        }
+
+        // Filter by ship type
+        if ($request->filled('type')) {
+            $query->whereHas('class', function($q) use ($request) {
+                $q->where('type_id', $request->type);
+            });
+        }
+
+        // Filter by aircraft carrier
+        if ($request->filled('carrier')) {
+            $query->where('is_aircraft_carrier', $request->carrier == 'yes');
+        }
+
+        // Sort
+        $sortBy = $request->get('sort', 'created_at');
+        $sortOrder = $request->get('order', 'desc');
+        $allowedSorts = ['name', 'launch_date', 'displacement', 'max_speed', 'crew', 'created_at'];
         
-        return view('admin.ships.index', compact('ships'));
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $ships = $query->paginate(15)->withQueryString();
+
+        // Get data for filter dropdowns
+        $countries = Country::orderBy('name')->get();
+        $types = ShipType::orderBy('name')->get();
+        
+        // Preserve filters for the view
+        $filters = $request->all();
+
+        return view('admin.ships.index', compact('ships', 'countries', 'types', 'filters'));
     }
 
     /**
@@ -32,10 +85,11 @@ class AdminShipController extends Controller
     public function create()
     {
         $classes = ShipClass::with('country')->orderBy('name')->get();
+        $countries = Country::orderBy('name')->get();  // ← ADDED for operator dropdown
         $aircraftModels = AircraftModel::with('type')->orderBy('name')->get();
         $battles = Battle::orderBy('name')->get();
         
-        return view('admin.ships.create', compact('classes', 'aircraftModels', 'battles'));
+        return view('admin.ships.create', compact('classes', 'countries', 'aircraftModels', 'battles'));
     }
 
     /**
@@ -44,40 +98,42 @@ class AdminShipController extends Controller
     public function store(Request $request)
     {
         if ($request->has('aircraft')) {
-        $aircraft = array_filter($request->aircraft, function($item) {
-            return !empty($item['model_id']) && !empty($item['quantity']);
-        });
-        $request->merge(['aircraft' => array_values($aircraft)]); // Re-index array
-    }
-       $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'class_id' => 'required|exists:classes,id',
-        'launch_date' => 'nullable|date',
-        'commission_date' => 'nullable|date',
-        'displacement' => 'nullable|numeric|min:0|max:999999',
-        'length' => 'nullable|numeric|min:0|max:999.99',
-        'beam' => 'nullable|numeric|min:0|max:99.99',
-        'draft' => 'nullable|numeric|min:0|max:99.99',
-        'max_speed' => 'nullable|numeric|min:0|max:99.99',  // ← MAX 99.99 knots
-        'crew' => 'nullable|integer|min:0|max:10000',
-        'fate' => 'nullable|string|max:255',
-        'description' => 'nullable|string|max:1000',
-        'is_aircraft_carrier' => 'boolean',
-        'images' => 'nullable|array',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'aircraft' => 'nullable|array',
-        'aircraft.*.model_id' => 'nullable|exists:aircraft_models,id',
-        'aircraft.*.quantity' => 'nullable|integer|min:1',
-        'battles' => 'nullable|array',
-        'battles.*' => 'exists:battles,id',
-        'battle_results' => 'nullable|array',
-    ], [
-        'max_speed.max' => 'Max speed cannot exceed 99.99 knots.',
-        'beam.max' => 'Beam cannot exceed 99.99 meters.',
-        'draft.max' => 'Draft cannot exceed 99.99 meters.',
-        'displacement.max' => 'Displacement cannot exceed 999,999 tons.',
-        'crew.max' => 'Crew cannot exceed 10,000 sailors.',
-    ]);
+            $aircraft = array_filter($request->aircraft, function($item) {
+                return !empty($item['model_id']) && !empty($item['quantity']);
+            });
+            $request->merge(['aircraft' => array_values($aircraft)]);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'class_id' => 'required|exists:classes,id',
+            'operator_country_id' => 'nullable|exists:countries,id',  // ← ADDED
+            'launch_date' => 'nullable|date',
+            'commission_date' => 'nullable|date',
+            'displacement' => 'nullable|numeric|min:0|max:999999',
+            'length' => 'nullable|numeric|min:0|max:999.99',
+            'beam' => 'nullable|numeric|min:0|max:99.99',
+            'draft' => 'nullable|numeric|min:0|max:99.99',
+            'max_speed' => 'nullable|numeric|min:0|max:99.99',
+            'crew' => 'nullable|integer|min:0|max:10000',
+            'fate' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'is_aircraft_carrier' => 'boolean',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'aircraft' => 'nullable|array',
+            'aircraft.*.model_id' => 'nullable|exists:aircraft_models,id',
+            'aircraft.*.quantity' => 'nullable|integer|min:1',
+            'battles' => 'nullable|array',
+            'battles.*' => 'exists:battles,id',
+            'battle_results' => 'nullable|array',
+        ], [
+            'max_speed.max' => 'Max speed cannot exceed 99.99 knots.',
+            'beam.max' => 'Beam cannot exceed 99.99 meters.',
+            'draft.max' => 'Draft cannot exceed 99.99 meters.',
+            'displacement.max' => 'Displacement cannot exceed 999,999 tons.',
+            'crew.max' => 'Crew cannot exceed 10,000 sailors.',
+        ]);
 
         // Create ship
         $ship = Ship::create($validated);
@@ -138,6 +194,7 @@ class AdminShipController extends Controller
         $ship = Ship::with([
             'class',
             'class.country',
+            'operatorCountry',  // ← ADDED
             'images',
             'battles',
             'aircraftModels',
@@ -154,10 +211,11 @@ class AdminShipController extends Controller
     {
         $ship = Ship::with(['images', 'battles', 'aircraftModels'])->findOrFail($id);
         $classes = ShipClass::with('country')->orderBy('name')->get();
+        $countries = Country::orderBy('name')->get();  // ← ADDED for operator dropdown
         $aircraftModels = AircraftModel::with('type')->orderBy('name')->get();
         $battles = Battle::orderBy('name')->get();
         
-        return view('admin.ships.edit', compact('ship', 'classes', 'aircraftModels', 'battles'));
+        return view('admin.ships.edit', compact('ship', 'classes', 'countries', 'aircraftModels', 'battles'));
     }
 
     /**
@@ -166,41 +224,44 @@ class AdminShipController extends Controller
     public function update(Request $request, string $id)
     {
         $ship = Ship::findOrFail($id);
-         if ($request->has('aircraft')) {
-        $aircraft = array_filter($request->aircraft, function($item) {
-            return !empty($item['model_id']) && !empty($item['quantity']);
-        });
-        $request->merge(['aircraft' => array_values($aircraft)]); // Re-index array
-    }
+
+        if ($request->has('aircraft')) {
+            $aircraft = array_filter($request->aircraft, function($item) {
+                return !empty($item['model_id']) && !empty($item['quantity']);
+            });
+            $request->merge(['aircraft' => array_values($aircraft)]);
+        }
+
         $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'class_id' => 'required|exists:classes,id',
-        'launch_date' => 'nullable|date',
-        'commission_date' => 'nullable|date',
-        'displacement' => 'nullable|numeric|min:0|max:999999',
-        'length' => 'nullable|numeric|min:0|max:999.99',
-        'beam' => 'nullable|numeric|min:0|max:99.99',
-        'draft' => 'nullable|numeric|min:0|max:99.99',
-        'max_speed' => 'nullable|numeric|min:0|max:99.99',  
-        'crew' => 'nullable|integer|min:0|max:10000',
-        'fate' => 'nullable|string|max:255',
-        'description' => 'nullable|string|max:1000',
-        'is_aircraft_carrier' => 'boolean',
-        'images' => 'nullable|array',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'aircraft' => 'nullable|array',
-        'aircraft.*.model_id' => 'nullable|exists:aircraft_models,id',
-        'aircraft.*.quantity' => 'nullable|integer|min:1',
-        'battles' => 'nullable|array',
-        'battles.*' => 'exists:battles,id',
-        'battle_results' => 'nullable|array',
-    ], [
-        'max_speed.max' => 'Max speed cannot exceed 99.99 knots.',
-        'beam.max' => 'Beam cannot exceed 99.99 meters.',
-        'draft.max' => 'Draft cannot exceed 99.99 meters.',
-        'displacement.max' => 'Displacement cannot exceed 999,999 tons.',
-        'crew.max' => 'Crew cannot exceed 10,000 sailors.',
-    ]);
+            'name' => 'required|string|max:255',
+            'class_id' => 'required|exists:classes,id',
+            'operator_country_id' => 'nullable|exists:countries,id',  // ← ADDED
+            'launch_date' => 'nullable|date',
+            'commission_date' => 'nullable|date',
+            'displacement' => 'nullable|numeric|min:0|max:999999',
+            'length' => 'nullable|numeric|min:0|max:999.99',
+            'beam' => 'nullable|numeric|min:0|max:99.99',
+            'draft' => 'nullable|numeric|min:0|max:99.99',
+            'max_speed' => 'nullable|numeric|min:0|max:99.99',
+            'crew' => 'nullable|integer|min:0|max:10000',
+            'fate' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'is_aircraft_carrier' => 'boolean',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'aircraft' => 'nullable|array',
+            'aircraft.*.model_id' => 'nullable|exists:aircraft_models,id',
+            'aircraft.*.quantity' => 'nullable|integer|min:1',
+            'battles' => 'nullable|array',
+            'battles.*' => 'exists:battles,id',
+            'battle_results' => 'nullable|array',
+        ], [
+            'max_speed.max' => 'Max speed cannot exceed 99.99 knots.',
+            'beam.max' => 'Beam cannot exceed 99.99 meters.',
+            'draft.max' => 'Draft cannot exceed 99.99 meters.',
+            'displacement.max' => 'Displacement cannot exceed 999,999 tons.',
+            'crew.max' => 'Crew cannot exceed 10,000 sailors.',
+        ]);
 
         $ship->update($validated);
 

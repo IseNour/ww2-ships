@@ -65,6 +65,9 @@
                 @enderror
             </div>
 
+            <!-- ============================================ -->
+            <!-- PARTICIPATING SHIPS - FIXED                  -->
+            <!-- ============================================ -->
             <div class="mb-3">
                 <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Participating Ships</label>
                 <div style="max-height: 300px; overflow-y: auto; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 16px;">
@@ -77,8 +80,10 @@
                                 {{ $ship->name }} 
                                 <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">({{ $ship->class->name }} - {{ $ship->class->country->name }})</small>
                             </label>
-                            <input type="text" name="results[]" class="form-control form-control-sm mt-1 result-input" 
-                                   placeholder="Result (Victory, Sunk, etc.)" style="display: none; width: 200px; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 8px; padding: 4px 10px;">
+                            <!-- FIXED: Use ship ID as array key for results -->
+                            <input type="text" name="results[{{ $ship->id }}]" class="form-control form-control-sm mt-1 result-input" 
+                                   placeholder="Result (Victory, Sunk, etc.)" 
+                                   style="display: none; width: 200px; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 8px; padding: 4px 10px;">
                         </div>
                     @endforeach
                 </div>

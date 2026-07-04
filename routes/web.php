@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminCountryController;
 use App\Http\Controllers\Admin\AdminClassController;  // ← ADD THIS
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AircraftController;  // ← ADD THIS
 
 // Public routes (read-only)
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -19,6 +20,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+
+Route::get('/aircraft', [AircraftController::class, 'index'])->name('aircraft.index');
+Route::get('/aircraft/{id}', [AircraftController::class, 'show'])->name('aircraft.show');
 
 // Public ship routes
 Route::get('/ships', [ShipController::class, 'index'])->name('ships.index');

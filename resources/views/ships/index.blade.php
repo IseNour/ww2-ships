@@ -197,7 +197,8 @@
                     <p class="card-text">
                         <small class="text-muted">
                             <i class="bi bi-tag" style="color: #1a3a5c;"></i> {{ $ship->class->name }}<br>
-                            <i class="bi bi-flag" style="color: #1a3a5c;"></i> {{ $ship->class->country->name }}
+                            <i class="bi bi-flag" style="color: #1a3a5c;"></i> {{ $ship->class->country->name }}<br>
+                            <i class="bi bi-info-circle" style="color: #1a3a5c;"></i> {{ $ship->class->type->name ?? 'Unknown' }}
                         </small>
                     </p>
                     <div class="d-flex flex-wrap gap-1 mb-2">

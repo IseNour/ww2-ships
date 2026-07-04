@@ -10,7 +10,7 @@ class Ship extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'class_id', 'launch_date', 'commission_date',
+        'name', 'class_id', 'operator_country_id', 'launch_date', 'commission_date',
         'displacement', 'length', 'beam', 'draft', 'max_speed',
         'crew', 'fate', 'description', 'is_aircraft_carrier'
     ];
@@ -27,6 +27,14 @@ class Ship extends Model
     return $this->belongsTo(ShipClass::class, 'class_id');
 }
 
+    public function operatorCountry()
+    {
+        return $this->belongsTo(Country::class, 'operator_country_id');
+    }
+public function getOperatingCountryAttribute()
+{
+    return $this->operatorCountry ?? $this->class->country;
+}
     public function images()
     {
         return $this->hasMany(ShipImage::class);

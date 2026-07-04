@@ -16,7 +16,7 @@ class ShipController extends Controller
     public function index(Request $request)
     {
         // Start query with eager loading
-        $query = Ship::with(['class', 'class.country', 'images','aircraftModels']);
+        $query = Ship::with(['class', 'class.country', 'class.type', 'images','aircraftModels']);
 
         // 1. Search by ship name or description or class name or country name
         if ($request->filled('search')) {

@@ -11,17 +11,34 @@
             <div>
                 <h1 style="font-family: 'Cinzel', serif; color: #1a3a5c; font-size: 2.5rem;">⚓ {{ $ship->name }}</h1>
                 <div class="d-flex flex-wrap gap-2 mt-2">
+                    <!-- Class Badge -->
                     <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
                         <i class="bi bi-tag"></i> {{ $ship->class->name }}
                     </span>
-                    <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
-                        <i class="bi bi-flag"></i> {{ $ship->class->country->name }}
+                    
+                    <!-- Class Country Badge -->
+                    <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
+                        <i class="bi bi-building"></i> Class: {{ $ship->class->country->name }}
                     </span>
+                    
+                    <!-- Operator Country Badge (if different from class country) -->
+                    @if($ship->operatorCountry && $ship->operatorCountry->id != $ship->class->country->id)
+                        <span class="badge" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
+                            <i class="bi bi-flag"></i> Operated by: {{ $ship->operatorCountry->name }}
+                        </span>
+                    @endif
+                    
+                    <!-- Ship Type Badge -->
+                    <span class="badge" style="background: linear-gradient(135deg, #2e89a8 0%, #1a3a5c 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
+                        <i class="bi bi-info-circle"></i> {{ $ship->class->type->name ?? 'Unknown' }}
+                    </span>
+                    
                     @if($ship->is_aircraft_carrier)
                         <span class="badge" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
                             <i class="bi bi-airplane"></i> Aircraft Carrier
                         </span>
                     @endif
+                    
                     @if($ship->launch_date)
                         <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
                             <i class="bi bi-calendar"></i> Launched {{ $ship->launch_date->format('Y') }}
@@ -59,9 +76,19 @@
                                     <td style="color: #5e6b72;">{{ $ship->class->name }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Country</td>
+                                    <td style="color: #1a3a5c; font-weight: 600;">Class Country</td>
                                     <td style="color: #5e6b72;">{{ $ship->class->country->name }}</td>
                                 </tr>
+                                @if($ship->operatorCountry && $ship->operatorCountry->id != $ship->class->country->id)
+                                    <tr>
+                                        <td style="color: #1a3a5c; font-weight: 600;">Operator Country</td>
+                                        <td style="color: #5e6b72;">
+                                            <span class="badge" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; padding: 4px 12px; border-radius: 12px;">
+                                                {{ $ship->operatorCountry->name }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endif
                                 <tr>
                                     <td style="color: #1a3a5c; font-weight: 600;">Launch Date</td>
                                     <td style="color: #5e6b72;">{{ $ship->launch_date?->format('F d, Y') ?? 'N/A' }}</td>
@@ -146,8 +173,11 @@
         <!-- ============================================ -->
         @if($ship->is_aircraft_carrier && $ship->aircraftModels->count() > 0)
             <div class="card shadow-sm border-0 mb-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px;">
-                <div class="card-header border-0" style="background: linear-gradient(135deg, #2e89a8 0%, #1a3a5c 100%); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
+                <div class="card-header border-0 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #2e89a8 0%, #1a3a5c 100%); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
                     <h5 class="mb-0" style="font-family: 'Cinzel', serif;"><i class="bi bi-airplane"></i> Aircraft Complement</h5>
+                    <a href="{{ route('aircraft.index') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; padding: 4px 16px; transition: all 0.3s ease;">
+                        <i class="bi bi-airplane"></i> View All Aircraft
+                    </a>
                 </div>
                 <div class="card-body p-4">
                     <div class="table-responsive">
@@ -157,39 +187,24 @@
                                     <th style="color: #1a3a5c;">Aircraft</th>
                                     <th style="color: #1a3a5c;">Type</th>
                                     <th style="color: #1a3a5c;">Quantity</th>
-                                    <th style="color: #1a3a5c;">Period</th>
+                                    <th style="color: #1a3a5c; text-align: center;">Details</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($ship->aircraftModels as $aircraft)
                                     <tr>
                                         <td style="color: #1a3a5c; font-weight: 500;">{{ $aircraft->name }}</td>
-                                        <td style="color: #5e6b72;">{{ $aircraft->type->name }}</td>
-                                        <td style="color: #5e6b72;">{{ $aircraft->pivot->quantity }}</td>
-                                        <td style="color: #5e6b72;">
-    @if($aircraft->pivot->start_date)
-        @php
-            try {
-                $startYear = \Carbon\Carbon::parse($aircraft->pivot->start_date)->format('Y');
-            } catch (\Exception $e) {
-                $startYear = $aircraft->pivot->start_date;
-            }
-        @endphp
-        {{ $startYear }}
-    @else
-        N/A
-    @endif
-    @if($aircraft->pivot->end_date)
-        @php
-            try {
-                $endYear = \Carbon\Carbon::parse($aircraft->pivot->end_date)->format('Y');
-            } catch (\Exception $e) {
-                $endYear = $aircraft->pivot->end_date;
-            }
-        @endphp
-        - {{ $endYear }}
-    @endif
-</td>
+                                        <td>
+                                            <span class="badge" style="background: linear-gradient(135deg, #2e89a8 0%, #1a3a5c 100%); color: white; padding: 4px 12px; border-radius: 12px;">
+                                                {{ $aircraft->type->name ?? 'N/A' }}
+                                            </span>
+                                        </td>
+                                        <td style="color: #5e6b72; font-weight: 600;">{{ $aircraft->pivot->quantity }}</td>
+                                        <td style="text-align: center;">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#aircraftModal{{ $aircraft->id }}" style="border-radius: 8px; padding: 4px 14px;">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -197,8 +212,98 @@
                     </div>
                 </div>
             </div>
-        @endif
 
+            <!-- ============================================ -->
+            <!-- AIRCRAFT MODALS                              -->
+            <!-- ============================================ -->
+            @foreach($ship->aircraftModels as $aircraft)
+                <div class="modal fade" id="aircraftModal{{ $aircraft->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                            <div class="modal-header" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; border-radius: 16px 16px 0 0; padding: 20px 24px;">
+                                <h5 class="modal-title" style="font-family: 'Cinzel', serif;">
+                                    <i class="bi bi-airplane"></i> {{ $aircraft->name }}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="row">
+                                    <!-- Left Column -->
+                                    <div class="col-md-6">
+                                        <h6 style="color: #1a3a5c; font-weight: 700; border-bottom: 2px solid #1a3a5c; padding-bottom: 8px; margin-bottom: 16px;">
+                                            <i class="bi bi-info-circle"></i> Specifications
+                                        </h6>
+                                        <table class="table table-borderless table-sm">
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600; width: 40%;">Type</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->type->name ?? 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Country</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->country->name ?? 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Max Speed</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->max_speed }} knots</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Range</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->range }} miles</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Crew</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->crew }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <!-- Right Column -->
+                                    <div class="col-md-6">
+                                        <h6 style="color: #1a3a5c; font-weight: 700; border-bottom: 2px solid #1a3a5c; padding-bottom: 8px; margin-bottom: 16px;">
+                                            <i class="bi bi-calendar"></i> History
+                                        </h6>
+                                        <table class="table table-borderless table-sm">
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600; width: 40%;">First Flight</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->first_flight ? date('d M Y', strtotime($aircraft->first_flight)) : 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Introduced</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->introduced ? date('d M Y', strtotime($aircraft->introduced)) : 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Armament</td>
+                                                <td style="color: #5e6b72;">{{ $aircraft->armament ?? 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #1a3a5c; font-weight: 600;">Carried On</td>
+                                                <td style="color: #5e6b72;">
+                                                    {{ $ship->name }}
+                                                    @if($aircraft->pivot->quantity)
+                                                        <span class="badge bg-secondary">×{{ $aircraft->pivot->quantity }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                @if($aircraft->description)
+                                    <div class="mt-3 p-3" style="background: rgba(26, 58, 92, 0.05); border-radius: 12px; border-left: 4px solid #1a3a5c;">
+                                        <strong style="color: #1a3a5c;">Description:</strong>
+                                        <p class="mt-2 mb-0" style="color: #5e6b72; line-height: 1.6;">{{ $aircraft->description }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="modal-footer" style="border-top: 1px solid #e2e8f0; padding: 16px 24px;">
+                                <a href="{{ route('aircraft.show', $aircraft->id) }}" class="btn btn-naval" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; border: none; border-radius: 10px; padding: 8px 20px; font-weight: 600; transition: all 0.3s ease;">
+                                    <i class="bi bi-airplane"></i> View Full Aircraft Page
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 10px; padding: 8px 20px;">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @endif
     </div>
 
     <!-- Right Column - Images & Actions -->

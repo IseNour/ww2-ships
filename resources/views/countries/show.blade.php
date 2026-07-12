@@ -57,9 +57,9 @@
                                             @endif
                                         </small>
                                     </div>
-                                    <a href="{{ route('ships.index') }}?class={{ $class->id }}" class="btn btn-sm btn-naval" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; border: none; border-radius: 8px; padding: 4px 12px; transition: all 0.3s ease;">
-                                        View Ships
-                                    </a>
+                                   <a href="{{ route('classes.show', $class->id) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; border: none; border-radius: 8px; transition: all 0.3s ease;">
+    <i class="bi bi-eye"></i> View Ships
+</a>
                                 </div>
                             </div>
                         @endforeach

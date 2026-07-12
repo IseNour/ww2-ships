@@ -85,8 +85,30 @@
                         <table class="table table-sm table-borderless">
                             <tr><td style="color: #1a3a5c; font-weight: 500;">Max Speed</td><td style="color: #5e6b72;">{{ $ship->max_speed }} knots</td></tr>
                             <tr><td style="color: #1a3a5c; font-weight: 500;">Crew</td><td style="color: #5e6b72;">{{ number_format($ship->crew) }}</td></tr>
-                            <tr><td style="color: #1a3a5c; font-weight: 500;">Launch Date</td><td style="color: #5e6b72;">{{ $ship->launch_date?->format('F d, Y') ?? 'N/A' }}</td></tr>
-                            <tr><td style="color: #1a3a5c; font-weight: 500;">Commission Date</td><td style="color: #5e6b72;">{{ $ship->commission_date?->format('F d, Y') ?? 'N/A' }}</td></tr>
+                            <tr>
+    <td style="color: #1a3a5c; font-weight: 500;">Launch Date</td> <td style="color: #5e6b72;">
+        @if($ship->launch_date)
+            @if(strtotime($ship->launch_date))
+                {{ date('F d, Y', strtotime($ship->launch_date)) }}
+            @else
+                {{ $ship->launch_date }}
+            @endif
+        @else
+            N/A
+        @endif
+    </td>
+</tr>
+                            <tr><td style="color: #1a3a5c; font-weight: 500;">Commission Date</td><td style="color: #5e6b72;">
+    @if($ship->commission_date)
+        @if(strtotime($ship->commission_date))
+            {{ date('F d, Y', strtotime($ship->commission_date)) }}
+        @else
+            {{ $ship->commission_date }}
+        @endif
+    @else
+        N/A
+    @endif
+</td></tr>
                         </table>
                     </div>
                 </div>

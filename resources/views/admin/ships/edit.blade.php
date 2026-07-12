@@ -76,9 +76,10 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Launch Date</label>
-                        <input type="date" name="launch_date" class="form-control @error('launch_date') is-invalid @enderror" 
-                               value="{{ old('launch_date', $ship->launch_date?->format('Y-m-d')) }}"
-                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
+                        <input type="text" name="launch_date" class="form-control @error('launch_date') is-invalid @enderror" 
+       value="{{ old('launch_date') }}" 
+       placeholder="e.g., 1941-05-15 or Never launched"
+       style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('launch_date')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -87,9 +88,10 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Commission Date</label>
-                        <input type="date" name="commission_date" class="form-control @error('commission_date') is-invalid @enderror" 
-                               value="{{ old('commission_date', $ship->commission_date?->format('Y-m-d')) }}"
-                               style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
+                       <input type="text" name="commission_date" class="form-control @error('commission_date') is-invalid @enderror" 
+       value="{{ old('commission_date', $ship->commission_date) }}" 
+       placeholder="e.g., 1941-05-15 or Never commissioned"
+       style="border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 10px 16px;">
                         @error('commission_date')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror

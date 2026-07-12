@@ -114,22 +114,7 @@
             <div class="collapse mt-3" id="advancedFilters">
                 <div class="row g-3">
                     <!-- Year Range -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">📅 Launch Year From</label>
-                        <input type="number" name="year_from" class="form-control" 
-                               placeholder="e.g., 1939" 
-                               value="{{ $filters['year_from'] ?? '' }}"
-                               min="{{ $yearMin }}" max="{{ $yearMax }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold" style="color: #1a3a5c;">📅 Launch Year To</label>
-                        <input type="number" name="year_to" class="form-control" 
-                               placeholder="e.g., 1945" 
-                               value="{{ $filters['year_to'] ?? '' }}"
-                               min="{{ $yearMin }}" max="{{ $yearMax }}"
-                               style="border: 2px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 10px 16px;">
-                    </div>
+                   
 
                     <!-- Displacement Range -->
                     <div class="col-md-3">
@@ -209,7 +194,15 @@
                         @endif
                         @if($ship->launch_date)
                             <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #2e89a8 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem;">
-                                <i class="bi bi-calendar"></i> {{ $ship->launch_date->format('Y') }}
+                                <i class="bi bi-calendar"></i> @if($ship->launch_date)
+    @if(strtotime($ship->launch_date))
+        {{ date('Y', strtotime($ship->launch_date)) }}
+    @else
+        {{ $ship->launch_date }}
+    @endif
+@else
+    N/A
+@endif
                             </span>
                         @endif
                     </div>

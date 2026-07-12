@@ -14,7 +14,6 @@ class ShipTypeSeeder extends Seeder
             'Aircraft Carrier',
             'Cruiser',
             'Destroyer',
-            'Frigate',
             'Submarine',
             'Battlecruiser',
             'Escort Carrier',

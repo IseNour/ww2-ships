@@ -81,7 +81,15 @@
                                                     </span>
                                                 @endif
                                                 <span class="bg-gradient-to-r from-navy-500 to-ocean-500 text-white px-3 py-2 rounded-full text-sm font-medium">
-                                                    <i class="bi bi-calendar"></i> {{ $ship->launch_date?->format('Y') ?? 'N/A' }}
+                                                    <i class="bi bi-calendar"></i> @if($ship->launch_date)
+    @if(strtotime($ship->launch_date))
+        {{ date('Y', strtotime($ship->launch_date)) }}
+    @else
+        {{ $ship->launch_date }}
+    @endif
+@else
+    N/A
+@endif
                                                 </span>
                                             </div>
                                             <p class="lead mb-4">{{ Str::limit($ship->description, 200) }}</p>

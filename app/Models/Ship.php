@@ -16,8 +16,7 @@ class Ship extends Model
     ];
 
     protected $casts = [
-        'launch_date' => 'date',
-        'commission_date' => 'date',
+       
         'is_aircraft_carrier' => 'boolean',
     ];
 

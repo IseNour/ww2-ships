@@ -109,7 +109,7 @@ class AdminShipController extends Controller
             'class_id' => 'required|exists:classes,id',
             'operator_country_id' => 'nullable|exists:countries,id',  // ← ADDED
             'launch_date' => 'nullable|date',
-            'commission_date' => 'nullable|date',
+            'commission_date' => 'nullable|string|max:255',
             'displacement' => 'nullable|numeric|min:0|max:999999',
             'length' => 'nullable|numeric|min:0|max:999.99',
             'beam' => 'nullable|numeric|min:0|max:99.99',
@@ -237,7 +237,7 @@ class AdminShipController extends Controller
             'class_id' => 'required|exists:classes,id',
             'operator_country_id' => 'nullable|exists:countries,id',  // ← ADDED
             'launch_date' => 'nullable|date',
-            'commission_date' => 'nullable|date',
+           'commission_date' => 'nullable|string|max:255',
             'displacement' => 'nullable|numeric|min:0|max:999999',
             'length' => 'nullable|numeric|min:0|max:999.99',
             'beam' => 'nullable|numeric|min:0|max:99.99',

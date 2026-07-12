@@ -4,6 +4,8 @@ use App\Http\Controllers\ShipController;
 use App\Http\Controllers\BattleController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\ProfileController; 
+use App\Http\Controllers\ShipClassController;  // ← ADD THIS
+
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminShipController;
 use App\Http\Controllers\Admin\AdminBattleController;
@@ -52,6 +54,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Public class routes (add these with your other public routes)
+Route::get('/classes', [ShipClassController::class, 'index'])->name('classes.index');
+Route::get('/classes/{id}', [ShipClassController::class, 'show'])->name('classes.show');
 // Admin routes (full CRUD)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');

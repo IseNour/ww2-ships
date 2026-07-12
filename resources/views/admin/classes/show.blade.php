@@ -72,9 +72,18 @@
                                         </a>
                                         @if($ship->launch_date)
                                             <br>
-                                            <small class="text-muted" style="color: #5e6b72 !important;">
-                                                <i class="bi bi-calendar"></i> {{ $ship->launch_date->format('Y') }}
-                                            </small>
+                                           <small class="text-muted" style="color: #5e6b72 !important;">
+    <i class="bi bi-calendar"></i>
+    @if($ship->launch_date)
+        @if(strtotime($ship->launch_date))
+            {{ date('Y', strtotime($ship->launch_date)) }}
+        @else
+            {{ $ship->launch_date }}
+        @endif
+    @else
+        N/A
+    @endif
+</small>
                                         @endif
                                     </div>
                                     <a href="{{ route('admin.ships.show', $ship) }}" class="btn btn-sm btn-naval">
@@ -88,7 +97,7 @@
                     <div class="text-center py-4" style="background: rgba(26, 58, 92, 0.03); border-radius: 12px;">
                         <i class="bi bi-ship display-6" style="color: #c5d1e0;"></i>
                         <p class="text-muted mt-2" style="color: #5e6b72 !important;">No ships in this class yet.</p>
-                        <a href="{{ route('admin.ships.create') }}" class="btn btn-sm btn-naval">
+                        <a href="{{ route('admin.ships.create', ['class' => $class->id]) }}" class="btn btn-sm btn-naval-outline">
                             <i class="bi bi-plus-circle"></i> Add First Ship
                         </a>
                     </div>
@@ -108,9 +117,9 @@
                 <a href="{{ route('admin.classes.edit', $class) }}" class="btn btn-naval w-100 mb-2">
                     <i class="bi bi-pencil"></i> Edit Class
                 </a>
-                <a href="{{ route('admin.ships.create') }}" class="btn btn-naval w-100 mb-2">
-                    <i class="bi bi-plus-circle"></i> Add Ship to this Class
-                </a>
+                <a href="{{ route('admin.ships.create', ['class' => $class->id]) }}" class="btn btn-naval w-100 mb-2">
+    <i class="bi bi-plus-circle"></i> Add Ship to this Class
+</a>
                 <a href="{{ route('admin.classes.index') }}" class="btn btn-naval-outline w-100">
                     <i class="bi bi-arrow-left"></i> Back to Classes
                 </a>

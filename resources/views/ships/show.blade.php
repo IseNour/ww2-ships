@@ -41,7 +41,15 @@
                     
                     @if($ship->launch_date)
                         <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
-                            <i class="bi bi-calendar"></i> Launched {{ $ship->launch_date->format('Y') }}
+                            <i class="bi bi-calendar"></i> @if($ship->launch_date)
+    @if(strtotime($ship->launch_date))
+        {{ date('Y', strtotime($ship->launch_date)) }}
+    @else
+        {{ $ship->launch_date }}
+    @endif
+@else
+    N/A
+@endif
                         </span>
                     @endif
                 </div>
@@ -62,77 +70,98 @@
         </div>
 
         <!-- Specifications -->
-        <div class="card shadow-sm border-0 mb-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px;">
-            <div class="card-header border-0" style="background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
-                <h5 class="mb-0" style="font-family: 'Cinzel', serif;"><i class="bi bi-list-ul"></i> Specifications</h5>
-            </div>
-            <div class="card-body p-4">
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600; width: 40%;">Class</td>
-                                    <td style="color: #5e6b72;">{{ $ship->class->name }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Class Country</td>
-                                    <td style="color: #5e6b72;">{{ $ship->class->country->name }}</td>
-                                </tr>
-                                @if($ship->operatorCountry && $ship->operatorCountry->id != $ship->class->country->id)
-                                    <tr>
-                                        <td style="color: #1a3a5c; font-weight: 600;">Operator Country</td>
-                                        <td style="color: #5e6b72;">
-                                            <span class="badge" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; padding: 4px 12px; border-radius: 12px;">
-                                                {{ $ship->operatorCountry->name }}
-                                            </span>
-                                        </td>
-                                    </tr>
+  
+<div class="card shadow-sm border-0 mb-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px;">
+    <div class="card-header border-0" style="background: linear-gradient(135deg, #1a3a5c 0%, #0e263a 100%); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
+        <h5 class="mb-0" style="font-family: 'Cinzel', serif;"><i class="bi bi-list-ul"></i> Specifications</h5>
+    </div>
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600; width: 40%;">Class</td>
+                            <td style="color: #5e6b72;">{{ $ship->class->name }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Class Country</td>
+                            <td style="color: #5e6b72;">{{ $ship->class->country->name }}</td>
+                        </tr>
+                        @if($ship->operatorCountry && $ship->operatorCountry->id != $ship->class->country->id)
+                            <tr>
+                                <td style="color: #1a3a5c; font-weight: 600;">Operator Country</td>
+                                <td style="color: #5e6b72;">
+                                    <span class="badge" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; padding: 4px 12px; border-radius: 12px;">
+                                        {{ $ship->operatorCountry->name }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Launch Date</td>
+                            <td style="color: #5e6b72;">
+                                @if($ship->launch_date)
+                                    @if(strtotime($ship->launch_date))
+                                        {{ date('F d, Y', strtotime($ship->launch_date)) }}
+                                    @else
+                                        {{ $ship->launch_date }}
+                                    @endif
+                                @else
+                                    N/A
                                 @endif
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Launch Date</td>
-                                    <td style="color: #5e6b72;">{{ $ship->launch_date?->format('F d, Y') ?? 'N/A' }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Commission Date</td>
-                                    <td style="color: #5e6b72;">{{ $ship->commission_date?->format('F d, Y') ?? 'N/A' }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Displacement</td>
-                                    <td style="color: #5e6b72;">{{ number_format($ship->displacement, 0) }} tons</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600; width: 40%;">Length</td>
-                                    <td style="color: #5e6b72;">{{ $ship->length }} m</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Beam</td>
-                                    <td style="color: #5e6b72;">{{ $ship->beam }} m</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Draft</td>
-                                    <td style="color: #5e6b72;">{{ $ship->draft }} m</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Max Speed</td>
-                                    <td style="color: #5e6b72;">{{ $ship->max_speed }} knots</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #1a3a5c; font-weight: 600;">Crew</td>
-                                    <td style="color: #5e6b72;">{{ number_format($ship->crew) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Commission Date</td>
+                            <td style="color: #5e6b72;">
+                                @if($ship->commission_date)
+                                    @if(strtotime($ship->commission_date))
+                                        {{ date('F d, Y', strtotime($ship->commission_date)) }}
+                                    @else
+                                        {{ $ship->commission_date }}
+                                    @endif
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Displacement</td>
+                            <td style="color: #5e6b72;">{{ number_format($ship->displacement, 0) }} tons</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600; width: 40%;">Length</td>
+                            <td style="color: #5e6b72;">{{ $ship->length }} m</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Beam</td>
+                            <td style="color: #5e6b72;">{{ $ship->beam }} m</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Draft</td>
+                            <td style="color: #5e6b72;">{{ $ship->draft }} m</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Max Speed</td>
+                            <td style="color: #5e6b72;">{{ $ship->max_speed }} knots</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #1a3a5c; font-weight: 600;">Crew</td>
+                            <td style="color: #5e6b72;">{{ number_format($ship->crew) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Battles Participated -->
         @if($ship->battles->count() > 0)

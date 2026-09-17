@@ -41,7 +41,7 @@ public function getOperatingCountryAttribute()
 
     public function battles()
     {
-        return $this->belongsToMany(Battle::class)->withPivot('result')->withTimestamps();
+        return $this->belongsToMany(Battle::class)->withPivot('battle_result', 'ship_status')->withTimestamps();
     }
 
     public function aircraft()

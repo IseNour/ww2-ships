@@ -164,39 +164,68 @@
 </div>
 
         <!-- Battles Participated -->
-        @if($ship->battles->count() > 0)
-            <div class="card shadow-sm border-0 mb-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px;">
-                <div class="card-header border-0" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
-                    <h5 class="mb-0" style="font-family: 'Cinzel', serif;"><i class="bi bi-trophy"></i> Battles Participated</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row">
-                        @foreach($ship->battles as $battle)
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(26, 58, 92, 0.05); border-left: 4px solid #1a3a5c;">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1" style="color: #1a3a5c; font-weight: 600;">
-                                            <a href="{{ route('battles.show', $battle) }}" style="color: #1a3a5c; text-decoration: none;">
-                                                {{ $battle->name }}
-                                            </a>
-                                        </h6>
-                                        <small class="text-muted">
-                                            <i class="bi bi-calendar"></i> {{ $battle->battle_date->format('F d, Y') }}
-                                            <span class="mx-2">•</span>
-                                            <i class="bi bi-geo-alt"></i> {{ $battle->battle_site }}
-                                        </small>
-                                    </div>
-                                    <span class="badge ms-2" style="background: {{ $battle->pivot->result === 'Victory' ? 'linear-gradient(135deg, #2e89a8 0%, #1a3a5c 100%)' : 'linear-gradient(135deg, #8a782e 0%, #ccb250 100%)' }}; color: white; padding: 6px 14px; border-radius: 12px;">
-                                        {{ $battle->pivot->result }}
-                                    </span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @endif
+        
 
+@if($ship->battles->count() > 0)
+    <div class="card shadow-sm border-0 mb-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px;">
+        <div class="card-header border-0" style="background: linear-gradient(135deg, #ccb250 0%, #8a782e 100%); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
+            <h5 class="mb-0" style="font-family: 'Cinzel', serif;"><i class="bi bi-trophy"></i> Battles Participated</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                @foreach($ship->battles as $battle)
+                    @php
+                        $battleResult = $battle->pivot->battle_result ?? 'Unknown';
+                        $shipStatus = $battle->pivot->ship_status ?? null;
+
+                        $resultColor = match($battleResult) {
+                            'Victory' => 'linear-gradient(135deg, #2e89a8 0%, #1a3a5c 100%)',
+                            'Defeat' => 'linear-gradient(135deg, #c0392b 0%, #7b241c 100%)',
+                            'Draw' => 'linear-gradient(135deg, #6c757d 0%, #495057 100%)',
+                            default => 'linear-gradient(135deg, #5e6b72 0%, #303a42 100%)'
+                        };
+
+                        $statusColor = match($shipStatus) {
+                            'Undamaged' => '#28a745',
+                            'Lightly Damaged' => '#90be6d',
+                            'Damaged' => '#fd7e14',
+                            'Heavily Damaged' => '#dc3545',
+                            'Sunk' => '#ccb250',
+                            'Scuttled' => '#8a782e',
+                            default => '#5e6b72'
+                        };
+                    @endphp
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(26, 58, 92, 0.05); border-left: 4px solid {{ $battleResult === 'Victory' ? '#2e89a8' : ($battleResult === 'Defeat' ? '#c0392b' : '#1a3a5c') }};">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" style="color: #1a3a5c; font-weight: 600;">
+                                    <a href="{{ route('battles.show', $battle) }}" style="color: #1a3a5c; text-decoration: none;">
+                                        {{ $battle->name }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ $battle->battle_date->format('F d, Y') }}
+                                    <span class="mx-2">•</span>
+                                    <i class="bi bi-geo-alt"></i> {{ $battle->battle_site }}
+                                </small>
+                                @if($shipStatus)
+                                    <br>
+                                    <span class="badge" style="background: {{ $statusColor }}; color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.65rem;">
+                                        <i class="bi bi-shield"></i> {{ $shipStatus }}
+                                    </span>
+                                @endif
+                            </div>
+                            <span class="badge ms-2" style="background: {{ $resultColor }}; color: white; padding: 6px 14px; border-radius: 12px;">
+                                {{ $battleResult }}
+                            </span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endif
         <!-- ============================================ -->
         <!-- AIRCRAFT COMPLEMENT SECTION (for carriers)   -->
         <!-- ============================================ -->

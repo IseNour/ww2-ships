@@ -86,29 +86,33 @@
                             <tr><td style="color: #1a3a5c; font-weight: 500;">Max Speed</td><td style="color: #5e6b72;">{{ $ship->max_speed }} knots</td></tr>
                             <tr><td style="color: #1a3a5c; font-weight: 500;">Crew</td><td style="color: #5e6b72;">{{ number_format($ship->crew) }}</td></tr>
                             <tr>
-    <td style="color: #1a3a5c; font-weight: 500;">Launch Date</td> <td style="color: #5e6b72;">
-        @if($ship->launch_date)
-            @if(strtotime($ship->launch_date))
-                {{ date('F d, Y', strtotime($ship->launch_date)) }}
-            @else
-                {{ $ship->launch_date }}
-            @endif
-        @else
-            N/A
-        @endif
-    </td>
-</tr>
-                            <tr><td style="color: #1a3a5c; font-weight: 500;">Commission Date</td><td style="color: #5e6b72;">
-    @if($ship->commission_date)
-        @if(strtotime($ship->commission_date))
-            {{ date('F d, Y', strtotime($ship->commission_date)) }}
-        @else
-            {{ $ship->commission_date }}
-        @endif
-    @else
-        N/A
-    @endif
-</td></tr>
+                                <td style="color: #1a3a5c; font-weight: 500;">Launch Date</td>
+                                <td style="color: #5e6b72;">
+                                    @if($ship->launch_date)
+                                        @if(strtotime($ship->launch_date))
+                                            {{ date('F d, Y', strtotime($ship->launch_date)) }}
+                                        @else
+                                            {{ $ship->launch_date }}
+                                        @endif
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="color: #1a3a5c; font-weight: 500;">Commission Date</td>
+                                <td style="color: #5e6b72;">
+                                    @if($ship->commission_date)
+                                        @if(strtotime($ship->commission_date))
+                                            {{ date('F d, Y', strtotime($ship->commission_date)) }}
+                                        @else
+                                            {{ $ship->commission_date }}
+                                        @endif
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -120,9 +124,30 @@
                     </h6>
                     <div class="row g-2">
                         @foreach($ship->battles as $battle)
+                            @php
+                                $battleResult = $battle->pivot->battle_result ?? 'Unknown';
+                                $shipStatus = $battle->pivot->ship_status ?? null;
+
+                                $resultColor = match($battleResult) {
+                                    'Victory' => '#2e89a8',
+                                    'Defeat' => '#c0392b',
+                                    'Draw' => '#6c757d',
+                                    default => '#1a3a5c'
+                                };
+
+                                $statusColor = match($shipStatus) {
+                                    'Undamaged' => '#28a745',
+                                    'Lightly Damaged' => '#90be6d',
+                                    'Damaged' => '#fd7e14',
+                                    'Heavily Damaged' => '#dc3545',
+                                    'Sunk' => '#ccb250',
+                                    'Scuttled' => '#8a782e',
+                                    default => '#5e6b72'
+                                };
+                            @endphp
                             <div class="col-md-6">
                                 <div class="p-2 rounded-3 d-flex justify-content-between align-items-center" 
-                                     style="background: rgba(26, 58, 92, 0.04); border-left: 3px solid {{ $battle->pivot->result === 'Victory' ? '#2e89a8' : ($battle->pivot->result === 'Sunk' ? '#ccb250' : '#1a3a5c') }};">
+                                     style="background: rgba(26, 58, 92, 0.04); border-left: 3px solid {{ $resultColor }};">
                                     <div>
                                         <a href="{{ route('admin.battles.show', $battle) }}" style="color: #1a3a5c; text-decoration: none; font-weight: 500; font-size: 0.9rem;">
                                             {{ $battle->name }}
@@ -131,9 +156,15 @@
                                         <small class="text-muted" style="color: #5e6b72 !important; font-size: 0.7rem;">
                                             {{ $battle->battle_date->format('Y') }}
                                         </small>
+                                        @if($shipStatus)
+                                            <br>
+                                            <span class="badge" style="background: {{ $statusColor }}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.6rem;">
+                                                {{ $shipStatus }}
+                                            </span>
+                                        @endif
                                     </div>
-                                    <span class="badge" style="background: {{ $battle->pivot->result === 'Victory' ? '#2e89a8' : ($battle->pivot->result === 'Sunk' ? '#ccb250' : '#5e6b72') }}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem;">
-                                        {{ $battle->pivot->result }}
+                                    <span class="badge" style="background: {{ $resultColor }}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem;">
+                                        {{ $battleResult }}
                                     </span>
                                 </div>
                             </div>
@@ -153,7 +184,6 @@
                                     <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem;">Aircraft</th>
                                     <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem;">Type</th>
                                     <th style="color: #1a3a5c; font-weight: 600; font-size: 0.8rem; text-align: center;">Qty</th>
-                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -162,7 +192,6 @@
                                         <td style="color: #1a3a5c; font-weight: 500; font-size: 0.85rem;">{{ $aircraft->name }}</td>
                                         <td style="color: #5e6b72; font-size: 0.85rem;">{{ $aircraft->type->name }}</td>
                                         <td style="color: #5e6b72; font-size: 0.85rem; text-align: center;">{{ $aircraft->pivot->quantity }}</td>
-                                       
                                     </tr>
                                 @endforeach
                             </tbody>

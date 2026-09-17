@@ -68,20 +68,50 @@
                 @if($battle->ships->count() > 0)
                     <div class="row g-2">
                         @foreach($battle->ships as $ship)
+                            @php
+                                $battleResult = $ship->pivot->battle_result ?? 'Unknown';
+                                $shipStatus = $ship->pivot->ship_status ?? null;
+
+                                $resultColor = match($battleResult) {
+                                    'Victory' => '#2e89a8',
+                                    'Defeat' => '#c0392b',
+                                    'Draw' => '#6c757d',
+                                    default => '#1a3a5c'
+                                };
+
+                                $statusColor = match($shipStatus) {
+                                    'Undamaged' => '#28a745',
+                                    'Lightly Damaged' => '#90be6d',
+                                    'Damaged' => '#fd7e14',
+                                    'Heavily Damaged' => '#dc3545',
+                                    'Sunk' => '#ccb250',
+                                    'Scuttled' => '#8a782e',
+                                    default => '#5e6b72'
+                                };
+                            @endphp
+
                             <div class="col-md-6">
                                 <div class="p-2 rounded-3 d-flex justify-content-between align-items-center" 
-                                     style="background: rgba(26, 58, 92, 0.04); border-left: 3px solid {{ $ship->pivot->result === 'Victory' ? '#2e89a8' : ($ship->pivot->result === 'Sunk' ? '#ccb250' : '#1a3a5c') }};">
+                                     style="background: rgba(26, 58, 92, 0.04); border-left: 3px solid {{ $resultColor }};">
+
                                     <div>
                                         <a href="{{ route('admin.ships.show', $ship) }}" style="color: #1a3a5c; text-decoration: none; font-weight: 500; font-size: 0.9rem;">
                                             {{ $ship->name }}
                                         </a>
                                         <br>
                                         <small class="text-muted" style="color: #5e6b72 !important; font-size: 0.7rem;">
-                                            {{ $ship->class->name }} • {{ $ship->class->country->name }}
+                                            {{ $ship->class->name ?? 'Unknown Class' }} • {{ $ship->class->country->name ?? 'Unknown' }}
                                         </small>
+                                        @if($shipStatus)
+                                            <br>
+                                            <span class="badge" style="background: {{ $statusColor }}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.6rem;">
+                                                {{ $shipStatus }}
+                                            </span>
+                                        @endif
                                     </div>
-                                    <span class="badge" style="background: {{ $ship->pivot->result === 'Victory' ? '#2e89a8' : ($ship->pivot->result === 'Sunk' ? '#ccb250' : '#5e6b72') }}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem;">
-                                        {{ $ship->pivot->result }}
+
+                                    <span class="badge" style="background: {{ $resultColor }}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem;">
+                                        {{ $battleResult }}
                                     </span>
                                 </div>
                             </div>
@@ -105,22 +135,84 @@
                 <i class="bi bi-speedometer2"></i> Quick Stats
             </div>
             <div class="card-body p-3">
+                @php
+                    $victories = $battle->ships->where('pivot.battle_result', 'Victory')->count();
+                    $defeats = $battle->ships->where('pivot.battle_result', 'Defeat')->count();
+                    $draws = $battle->ships->where('pivot.battle_result', 'Draw')->count();
+
+                    $undamaged = $battle->ships->where('pivot.ship_status', 'Undamaged')->count();
+                    $lightlyDamaged = $battle->ships->where('pivot.ship_status', 'Lightly Damaged')->count();
+                    $damaged = $battle->ships->where('pivot.ship_status', 'Damaged')->count();
+                    $heavilyDamaged = $battle->ships->where('pivot.ship_status', 'Heavily Damaged')->count();
+                    $sunk = $battle->ships->where('pivot.ship_status', 'Sunk')->count();
+                    $scuttled = $battle->ships->where('pivot.ship_status', 'Scuttled')->count();
+                @endphp
+
+                <!-- Basic Info -->
                 <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
                     <span style="color: #1a3a5c; font-size: 0.85rem;">Total Ships</span>
                     <span style="color: #1a3a5c; font-weight: 600;">{{ $battle->ships->count() }}</span>
                 </div>
+
+                <!-- Battle Results -->
                 <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
                     <span style="color: #1a3a5c; font-size: 0.85rem;">Victories</span>
-                    <span style="color: #2e89a8; font-weight: 600;">
-                        {{ $battle->ships->filter(function($ship) { return $ship->pivot->result === 'Victory'; })->count() }}
-                    </span>
+                    <span style="color: #2e89a8; font-weight: 600;">{{ $victories }}</span>
                 </div>
+
                 <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
-                    <span style="color: #1a3a5c; font-size: 0.85rem;">Sunk/Destroyed</span>
-                    <span style="color: #ccb250; font-weight: 600;">
-                        {{ $battle->ships->filter(function($ship) { return $ship->pivot->result === 'Sunk'; })->count() }}
-                    </span>
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Defeats</span>
+                    <span style="color: #c0392b; font-weight: 600;">{{ $defeats }}</span>
                 </div>
+
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Draws</span>
+                    <span style="color: #6c757d; font-weight: 600;">{{ $draws }}</span>
+                </div>
+
+                <!-- Ship Status -->
+                @if($undamaged > 0)
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Undamaged</span>
+                    <span style="color: #28a745; font-weight: 600;">{{ $undamaged }}</span>
+                </div>
+                @endif
+
+                @if($lightlyDamaged > 0)
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Lightly Damaged</span>
+                    <span style="color: #90be6d; font-weight: 600;">{{ $lightlyDamaged }}</span>
+                </div>
+                @endif
+
+                @if($damaged > 0)
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Damaged</span>
+                    <span style="color: #fd7e14; font-weight: 600;">{{ $damaged }}</span>
+                </div>
+                @endif
+
+                @if($heavilyDamaged > 0)
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Heavily Damaged</span>
+                    <span style="color: #dc3545; font-weight: 600;">{{ $heavilyDamaged }}</span>
+                </div>
+                @endif
+
+                @if($sunk > 0)
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Sunk</span>
+                    <span style="color: #ccb250; font-weight: 600;">{{ $sunk }}</span>
+                </div>
+                @endif
+
+                @if($scuttled > 0)
+                <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: rgba(26, 58, 92, 0.06) !important;">
+                    <span style="color: #1a3a5c; font-size: 0.85rem;">Scuttled</span>
+                    <span style="color: #8a782e; font-weight: 600;">{{ $scuttled }}</span>
+                </div>
+                @endif
+
                 <div class="d-flex justify-content-between py-2">
                     <span style="color: #1a3a5c; font-size: 0.85rem;">Battle ID</span>
                     <span style="color: #5e6b72; font-weight: 600;">#{{ $battle->id }}</span>

@@ -74,31 +74,57 @@
                 @enderror
             </div>
 
-           <div class="mb-3">
-    <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Participating Ships</label>
-    <div style="max-height: 300px; overflow-y: auto; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 16px;">
-        @foreach($ships as $ship)
-            @php
-                $pivot = $battle->ships->where('id', $ship->id)->first();
-            @endphp
-            <div class="form-check mb-2">
-                <input type="checkbox" name="ships[]" value="{{ $ship->id }}" 
-                       class="form-check-input ship-checkbox" 
-                       id="ship_{{ $ship->id }}"
-                       {{ $pivot ? 'checked' : '' }}>
-                <label class="form-check-label" for="ship_{{ $ship->id }}">
-                    {{ $ship->name }} 
-                    <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">({{ $ship->class->name }} - {{ $ship->class->country->name }})</small>
-                </label>
-                <!-- CHANGED: Use ship ID as array key for results -->
-                <input type="text" name="results[{{ $ship->id }}]" class="form-control form-control-sm mt-1 result-input" 
-                       placeholder="Result (Victory, Sunk, etc.)" 
-                       value="{{ $pivot ? $pivot->pivot->result : '' }}"
-                       style="{{ $pivot ? 'display: block;' : 'display: none;' }} width: 200px; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 8px; padding: 4px 10px;">
+            <!-- ============================================ -->
+            <!-- PARTICIPATING SHIPS - WITH BATTLE_RESULT & SHIP_STATUS -->
+            <!-- ============================================ -->
+            <div class="mb-3">
+                <label class="form-label fw-bold" style="color: var(--text-primary, #1a3a5c);">Participating Ships</label>
+                <div style="max-height: 400px; overflow-y: auto; border: 2px solid var(--border-color, rgba(26,58,92,0.1)); border-radius: 10px; padding: 16px;">
+                    @foreach($ships as $ship)
+                        @php
+                            $pivot = $battle->ships->where('id', $ship->id)->first();
+                        @endphp
+                        <div class="row mb-2 align-items-center ship-row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox" name="ships[]" value="{{ $ship->id }}" 
+                                           class="form-check-input ship-checkbox" 
+                                           id="ship_{{ $ship->id }}"
+                                           {{ $pivot ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="ship_{{ $ship->id }}">
+                                        {{ $ship->name }} 
+                                        <small class="text-muted" style="color: var(--text-secondary, #5e6b72); display: block; font-size: 0.7rem;">
+                                            {{ $ship->class->name }} - {{ $ship->class->country->name }}
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="battle_results[{{ $ship->id }}]" class="form-select form-select-sm battle-result-select" 
+                                        style="{{ $pivot ? 'display: block;' : 'display: none;' }}">
+                                    <option value="">Select Result</option>
+                                    <option value="Victory" {{ $pivot && $pivot->pivot->battle_result == 'Victory' ? 'selected' : '' }}>Victory</option>
+                                    <option value="Defeat" {{ $pivot && $pivot->pivot->battle_result == 'Defeat' ? 'selected' : '' }}>Defeat</option>
+                                    <option value="Draw" {{ $pivot && $pivot->pivot->battle_result == 'Draw' ? 'selected' : '' }}>Draw</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="ship_status[{{ $ship->id }}]" class="form-select form-select-sm ship-status-select"
+                                        style="{{ $pivot ? 'display: block;' : 'display: none;' }}">
+                                    <option value="">Select Status</option>
+                                    <option value="Undamaged" {{ $pivot && $pivot->pivot->ship_status == 'Undamaged' ? 'selected' : '' }}>Undamaged</option>
+                                    <option value="Lightly Damaged" {{ $pivot && $pivot->pivot->ship_status == 'Lightly Damaged' ? 'selected' : '' }}>Lightly Damaged</option>
+                                    <option value="Damaged" {{ $pivot && $pivot->pivot->ship_status == 'Damaged' ? 'selected' : '' }}>Damaged</option>
+                                    <option value="Heavily Damaged" {{ $pivot && $pivot->pivot->ship_status == 'Heavily Damaged' ? 'selected' : '' }}>Heavily Damaged</option>
+                                    <option value="Sunk" {{ $pivot && $pivot->pivot->ship_status == 'Sunk' ? 'selected' : '' }}>Sunk</option>
+                                    <option value="Scuttled" {{ $pivot && $pivot->pivot->ship_status == 'Scuttled' ? 'selected' : '' }}>Scuttled</option>
+                                </select>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <small class="text-muted" style="color: var(--text-secondary, #5e6b72);">Select ships and choose their battle result and status.</small>
             </div>
-        @endforeach
-    </div>
-</div>
 
             <div class="d-flex gap-3 mt-4">
                 <button type="submit" class="btn btn-naval">
@@ -116,12 +142,18 @@
 <script>
     document.querySelectorAll('.ship-checkbox').forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
-            const resultInput = this.closest('.form-check').querySelector('.result-input');
+            const row = this.closest('.ship-row');
+            const resultSelect = row.querySelector('.battle-result-select');
+            const statusSelect = row.querySelector('.ship-status-select');
+            
             if (this.checked) {
-                resultInput.style.display = 'block';
+                resultSelect.style.display = 'block';
+                statusSelect.style.display = 'block';
             } else {
-                resultInput.style.display = 'none';
-                resultInput.value = '';
+                resultSelect.style.display = 'none';
+                statusSelect.style.display = 'none';
+                resultSelect.value = '';
+                statusSelect.value = '';
             }
         });
     });

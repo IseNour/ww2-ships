@@ -17,7 +17,7 @@ class Battle extends Model
 
     public function ships()
     {
-        return $this->belongsToMany(Ship::class)->withPivot('result')->withTimestamps();
+        return $this->belongsToMany(Ship::class)->withPivot('battle_result', 'ship_status')->withTimestamps();
     }
      public function getThumbnailAttribute()
     {

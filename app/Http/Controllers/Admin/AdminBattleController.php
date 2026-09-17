@@ -11,15 +11,46 @@ use Illuminate\Support\Facades\Storage;
 class AdminBattleController extends Controller
 {
     /**
-     * Display a listing of battles.
+     * Display a listing of battles with search and filters.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $battles = Battle::with(['ships'])
-                         ->orderBy('battle_date', 'desc')
-                         ->paginate(15);
+        $query = Battle::with(['ships']);
+
+        // Search by name or location
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('battle_site', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->where('battle_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('battle_date', '<=', $request->date_to);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort', 'battle_date');
+        $sortOrder = $request->get('order', 'desc');
+        $allowedSorts = ['name', 'battle_date', 'battle_site', 'created_at'];
         
-        return view('admin.battles.index', compact('battles'));
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('battle_date', 'desc');
+        }
+
+        $battles = $query->paginate(15)->withQueryString();
+
+        // Preserve filters for the view
+        $filters = $request->all();
+
+        return view('admin.battles.index', compact('battles', 'filters'));
     }
 
     /**
@@ -44,7 +75,8 @@ class AdminBattleController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'ships' => 'nullable|array',
             'ships.*' => 'exists:ships,id',
-            'results' => 'nullable|array',
+            'battle_results' => 'nullable|array',
+            'ship_status' => 'nullable|array',
         ]);
 
         // Handle image upload
@@ -56,21 +88,23 @@ class AdminBattleController extends Controller
         $battle = Battle::create($validated);
 
         // =============================================
-        // ATTACH SHIPS WITH RESULTS - FIXED
+        // ATTACH SHIPS WITH BATTLE_RESULT AND SHIP_STATUS
         // =============================================
         if ($request->has('ships')) {
             $syncData = [];
-            $results = $request->results ?? [];
+            $battleResults = $request->battle_results ?? [];
+            $shipStatuses = $request->ship_status ?? [];
             
             foreach ($request->ships as $shipId) {
-                $result = 'Unknown';
-                
-                // Check if result exists for this ship ID
-                if (isset($results[$shipId]) && !empty($results[$shipId])) {
-                    $result = $results[$shipId];
+                // Only add if result is selected (not empty)
+                if (empty($battleResults[$shipId])) {
+                    continue;
                 }
                 
-                $syncData[$shipId] = ['result' => $result];
+                $syncData[$shipId] = [
+                    'battle_result' => $battleResults[$shipId],
+                    'ship_status' => $shipStatuses[$shipId] ?? null,
+                ];
             }
             
             $battle->ships()->attach($syncData);
@@ -117,7 +151,8 @@ class AdminBattleController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'ships' => 'nullable|array',
             'ships.*' => 'exists:ships,id',
-            'results' => 'nullable|array',
+            'battle_results' => 'nullable|array',
+            'ship_status' => 'nullable|array',
         ]);
 
         // Handle image upload
@@ -136,28 +171,25 @@ class AdminBattleController extends Controller
         $battle->update($validated);
 
         // =============================================
-        // UPDATE SHIP ASSOCIATIONS - FIXED
+        // UPDATE SHIP ASSOCIATIONS WITH BATTLE_RESULT AND SHIP_STATUS
         // =============================================
         if ($request->has('ships')) {
             $syncData = [];
-            $results = $request->results ?? [];
-            
-            // Log for debugging
-            \Log::info('Ships:', $request->ships);
-            \Log::info('Results:', $results);
+            $battleResults = $request->battle_results ?? [];
+            $shipStatuses = $request->ship_status ?? [];
             
             foreach ($request->ships as $shipId) {
-                $result = 'Unknown';
-                
-                // Check if result exists for this ship ID
-                if (isset($results[$shipId]) && !empty($results[$shipId])) {
-                    $result = $results[$shipId];
+                // Only add if result is selected (not empty)
+                if (empty($battleResults[$shipId])) {
+                    continue;
                 }
                 
-                $syncData[$shipId] = ['result' => $result];
+                $syncData[$shipId] = [
+                    'battle_result' => $battleResults[$shipId],
+                    'ship_status' => $shipStatuses[$shipId] ?? null,
+                ];
             }
             
-            // Sync will add, update, and remove as needed
             $battle->ships()->sync($syncData);
         } else {
             $battle->ships()->detach();
